@@ -52,7 +52,7 @@ const login = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
       expiresIn: "60d",
     });
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, username: user.username });
   } catch (err: any) {
     return res.status(500).json({ message: err.message });
   }
