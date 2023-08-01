@@ -1,4 +1,5 @@
 import Room from "../models/RoomModel";
+import User from "../models/UserModel";
 import { AuthRequest } from "../types/AuthRequest";
 import { Request, Response } from "express";
 
@@ -54,6 +55,7 @@ const getUsers = async (req: Request, res: Response) => {
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
     }
+
     const users = room.users;
     return res.status(200).json({ users });
   } catch (err: any) {
@@ -61,4 +63,26 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
-export { createRoom, getUsers, getRooms, getMessages };
+const joinRoom = async (req: AuthRequest, res: Response) => {
+  try {
+    const { roomId } = req.params;
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    const room = await Room.findById(roomId);
+    if (!user || !room) {
+      return res.status(404).json({ message: "User or room not found" });
+    }
+    if (room.users.includes(user._id)) {
+      return res.status(200).json({ message: "User already in room" });
+    }
+    room.users.push(user._id);
+    await room.save();
+    user.rooms?.push(room._id);
+    await user.save();
+    return res.status(200).json({ message: "User joined room" });
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export { createRoom, getUsers, getRooms, getMessages, joinRoom };
