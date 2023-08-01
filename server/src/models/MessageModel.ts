@@ -1,15 +1,15 @@
 import { model, Schema, Types } from "mongoose";
 interface IMessage {
   text: string;
-  user: Types.ObjectId;
-  room: Types.ObjectId;
+  userId: Types.ObjectId;
+  roomId: Types.ObjectId;
 }
 
 const MessageSchema = new Schema<IMessage>({
   text: { type: String, required: true },
-  user: { type: Schema.Types.ObjectId, ref: "User" },
-  room: { type: Schema.Types.ObjectId, ref: "Room" },
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  roomId: { type: Schema.Types.ObjectId, ref: "Room" },
 });
 
-const MessageModel = model<IMessage>("Message", MessageSchema);
-export default MessageModel;
+const Message = model<IMessage>("Message", MessageSchema);
+export default Message;
