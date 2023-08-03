@@ -6,12 +6,17 @@ interface IRoom {
   owner: Types.ObjectId;
 }
 
-const RoomSchema = new Schema<IRoom>({
-  name: { type: String, required: true },
-  messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
-  users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  owner: { type: Schema.Types.ObjectId, ref: "User" },
-});
+const RoomSchema = new Schema<IRoom>(
+  {
+    name: { type: String, required: true },
+    messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+    users: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    owner: { type: Schema.Types.ObjectId, ref: "User" },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 const Room = model<IRoom>("Room", RoomSchema);
 export default Room;

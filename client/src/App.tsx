@@ -4,12 +4,24 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Room from "./pages/Room";
 import { io } from "socket.io-client";
+import { useState } from "react";
+import { RoomType } from "./types/room";
 const socket = io("http://localhost:3000");
 export default function App() {
+  const [rooms, setRooms] = useState<RoomType[]>([]);
+  const [room, setRoom] = useState<string>("");
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <JoinRoom />,
+      element: (
+        <JoinRoom
+          socket={socket}
+          room={room}
+          rooms={rooms}
+          setRoom={setRoom}
+          setRooms={setRooms}
+        />
+      ),
     },
     {
       path: "/login",
@@ -21,7 +33,7 @@ export default function App() {
     },
     {
       path: "/room/:id",
-      element: <Room />,
+      element: <Room socket={socket} />,
     },
   ]);
 

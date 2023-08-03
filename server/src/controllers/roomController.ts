@@ -12,9 +12,15 @@ const createRoom = async (req: AuthRequest, res: Response) => {
     }
     const room = new Room({
       name,
-      userId,
+      owner: userId,
       users: [userId],
     });
+    const updateUser = await User.findByIdAndUpdate(userId, {
+      $push: { rooms: room._id },
+    });
+    if (!updateUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
     await room.save();
     return res.status(201).json({ room });
   } catch (err: any) {
@@ -75,14 +81,45 @@ const joinRoom = async (req: AuthRequest, res: Response) => {
     if (room.users.includes(user._id)) {
       return res.status(200).json({ message: "User already in room" });
     }
-    room.users.push(user._id);
-    await room.save();
-    user.rooms?.push(room._id);
-    await user.save();
+    await Room.findByIdAndUpdate(roomId, {
+      $push: { users: userId },
+    });
+    await User.findByIdAndUpdate(userId, {
+      $push: { rooms: roomId },
+    });
     return res.status(200).json({ message: "User joined room" });
   } catch (err: any) {
     return res.status(500).json({ message: err.message });
   }
 };
 
-export { createRoom, getUsers, getRooms, getMessages, joinRoom };
+const leaveRoom = async (req: AuthRequest, res: Response) => {
+  try {
+    const { roomId } = req.params;
+    const userId = req.userId;
+    const user = await User.findByIdAndUpdate(userId, {
+      $pull: { rooms: roomId },
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    let room = await Room.findById(roomId);
+    if (room?.owner === userId) {
+      return res.status(400).json({ message: "Owner cannot leave room" });
+    }
+    if (room?.users.includes(user._id) === false) {
+      return res.status(200).json({ message: "User not in room" });
+    }
+
+    room = await Room.findByIdAndUpdate(roomId, {
+      $pull: { users: userId },
+    });
+    if (!user || !room) {
+      return res.status(404).json({ message: "User or room not found" });
+    }
+    return res.status(200).json({ message: "User left room" });
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+export { createRoom, getUsers, getRooms, getMessages, joinRoom, leaveRoom };
