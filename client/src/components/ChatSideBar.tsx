@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { useEffect } from "react";
 import { Socket } from "socket.io-client";
 import axios from "../utils/axios";
@@ -31,8 +31,13 @@ const ChatSideBar = (props: Props) => {
         _id: user.userId,
         username: user.username,
       };
-      console.log(user);
-      setUsers((prev) => [...prev, joinedUser]);
+      setUsers((prev) => {
+        if (!prev.find((u) => u._id === joinedUser._id)) {
+          return [...prev, joinedUser];
+        } else {
+          return prev;
+        }
+      });
     });
     return () => {
       props.socket.off("userJoined");
