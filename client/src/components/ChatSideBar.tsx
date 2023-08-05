@@ -12,9 +12,9 @@ const ChatSideBar = (props: Props) => {
   const [users, setUsers] = React.useState<User[]>([]);
   const { id } = useParams<{ id: string }>();
   const leaveRoom = async () => {
-    props.socket.emit("leave");
     const { data } = await axios.post(`/room/leave/${id}`);
     console.log(data);
+    props.socket.emit("leave", id);
     navigate("/");
   };
 
@@ -44,19 +44,36 @@ const ChatSideBar = (props: Props) => {
       setUsers((prev) => prev.filter((u) => u._id !== user.userId));
     });
     return () => {
-      props.socket.off("userJoined");
+      props.socket.off("userLeft");
     };
   }, [props.socket]);
   return (
-    <div>
-      ChatSideBar
+    <div className="w-full h-full p-5 flex flex-col justify-between">
       <div>
-        Users
-        <ul>
-          {users?.map((user: User) => <li key={user._id}>{user.username}</li>)}
-        </ul>
+        <div>
+          <h1 className="text-4xl text-white mt-10">Room Name</h1>
+        </div>
+        <div>
+          <h4 className="text-white text-2xl mt-5"> Users:</h4>
+          <div className="text-white text-xl flex flex-col gap-5 mt-10">
+            {users?.map((user: User) => (
+              <div
+                className="text-white text-xl flex gap-3 items-center"
+                key={user._id}
+              >
+                <div className="">{user.username}</div>
+                <div className="h-3 mt-1 w-3 rounded-full bg-green-300"></div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      <button onClick={leaveRoom}>Leave Room</button>
+      <button
+        className="bg-red-500 p-2 rounded-lg text-center text-white hover:text-red-500 hover:bg-white flex"
+        onClick={leaveRoom}
+      >
+        Leave Room
+      </button>
     </div>
   );
 };

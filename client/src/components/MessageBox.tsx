@@ -21,7 +21,6 @@ const MessageBox = (props: Props) => {
     if (!username) {
       return;
     }
-    console.log();
     const messagePayload = {
       text,
       user: {
@@ -30,19 +29,23 @@ const MessageBox = (props: Props) => {
       },
       _id: uuidv4(),
     };
-    props.setMessages([...props.messages, messagePayload]);
     props.socket.emit("send", payload);
+    props.setMessages([...props.messages, messagePayload]);
     setText("");
   };
   return (
-    <div>
-      <form onSubmit={sendMessage}>
+    <div className="w-full h-10 m-2 text-center ml-4">
+      <form
+        onSubmit={sendMessage}
+        className="w-full p-5 flex items-center justify-center"
+      >
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          className="w-full p-2 bg-[#383A40] rounded-xl h-12 text-xl placeholder:text-xl outline-none text-white placeholder:text-gray-500 px-10"
+          placeholder="Type a message..."
         />
-        <button type="submit">Send</button>
       </form>
     </div>
   );

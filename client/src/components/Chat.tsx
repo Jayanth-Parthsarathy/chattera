@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../utils/axios";
 import { Message, MessageFromSocket } from "../types/message";
 import { Socket } from "socket.io-client";
+import MessageText from "./Message";
 
 type Props = {
   messages: Message[];
@@ -11,8 +12,8 @@ type Props = {
 };
 
 const Chat = (props: Props) => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  console.log(id);
   useEffect(() => {
     const fetchMessages = async () => {
       const { data } = await axios.get(`room/getmessages/${id}`);
@@ -22,24 +23,33 @@ const Chat = (props: Props) => {
   }, []);
   useEffect(() => {
     props.socket.on("receive", (message: any) => {
-      console.log(message);
       props.setMessages((prev) => [...prev, message]);
     });
     return () => {
       props.socket.off("receive");
     };
   }, [props.socket]);
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (username === undefined || username === null) {
+      navigate("/login");
+    }
+  }, []);
+
   return (
-    <div>
-      Chat
-      <ul>
+    <div
+      className="text-white w-full h-full flex flex-col gap-5 overflow-auto"
+      id="scroll"
+    >
+      <div className="mb-20">
         {props.messages.map((message) => (
-          <li key={message._id}>
-            {message.text}
-            <span>sent by{" " + message.user?.username}</span>
-          </li>
+          <MessageText
+            text={message.text}
+            username={message.user?.username}
+            key={message._id}
+          />
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
