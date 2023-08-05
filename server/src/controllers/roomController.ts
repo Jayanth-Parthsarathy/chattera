@@ -28,7 +28,7 @@ const createRoom = async (req: AuthRequest, res: Response) => {
   }
 };
 
-const getRooms = async (res: Response) => {
+const getRooms = async (req: Request, res: Response) => {
   try {
     const rooms = await Room.find();
     return res.status(200).json({ rooms });
