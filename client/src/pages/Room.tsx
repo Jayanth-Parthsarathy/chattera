@@ -20,7 +20,7 @@ const Room = (props: Props) => {
           setMessages={setMessages}
           socket={props.socket}
         />
-        <div className="fixed bottom-9 w-9/12 px-16">
+        <div className="fixed bottom-16 w-9/12 px-16">
           <MessageBox
             socket={props.socket}
             setMessages={setMessages}
