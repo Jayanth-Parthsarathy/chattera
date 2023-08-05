@@ -41,6 +41,9 @@ io.on("connection", (socket) => {
     socket.on("typing", (obj) => {
       socket.broadcast.to(data.room).emit("typing", obj);
     });
+    socket.on("stopTyping", (obj) => {
+      socket.broadcast.to(data.room).emit("stopTyping", obj);
+    });
     socket.on("send", (obj) => {
       const payload = {
         user: {

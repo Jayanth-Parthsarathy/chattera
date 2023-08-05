@@ -13,8 +13,7 @@ type Props = {
 const MessageBox = (props: Props) => {
   const { id } = useParams<{ id: string }>();
   const [text, setText] = React.useState<string>("");
-  const [typing, setTyping] = React.useState<string>("");
-  const [boolTyping, setBoolTyping] = React.useState<boolean>(false);
+  const [typing, setTyping] = React.useState<string[]>([]);
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { data } = await axios.post("/message/" + id, { text });
@@ -33,15 +32,27 @@ const MessageBox = (props: Props) => {
     };
     props.socket.emit("send", payload);
     props.setMessages([...props.messages, messagePayload]);
+    props.socket.emit("stopTyping", {
+      username: localStorage.getItem("username"),
+    });
     setText("");
   };
   useEffect(() => {
     props.socket.on("typing", (obj) => {
-      setTyping(obj.username);
+      setTyping([...typing, obj.username]);
     });
 
     return () => {
       props.socket.off("typing");
+    };
+  }, [props.socket]);
+  useEffect(() => {
+    props.socket.on("stopTyping", (obj) => {
+      setTyping(typing.filter((username) => username !== obj.username));
+    });
+
+    return () => {
+      props.socket.off("stopTyping");
     };
   }, [props.socket]);
   return (
@@ -50,22 +61,24 @@ const MessageBox = (props: Props) => {
         onSubmit={sendMessage}
         className="w-full p-5 flex flex-col items-start justify-center"
       >
-        {typing !== "" ? (
-          <div className="text-white">{typing} is typing...</div>
-        ) : null}
+        <div className="flex gap-2">
+          {typing.length > 3 ? (
+            <div className="text-white">Many People are typing...</div>
+          ) : (
+            typing.map((username) => (
+              <div key={username} className="text-white">
+                {username} is typing...
+              </div>
+            ))
+          )}
+        </div>
         <input
           type="text"
           value={text}
           onChange={(e) => {
-            if (!boolTyping) {
-              props.socket.emit("typing", {
-                username: localStorage.getItem("username"),
-              });
-            }
-            const typingTimeout = setTimeout(() => {
-              setBoolTyping(false);
-            }, 20);
-            clearTimeout(typingTimeout);
+            props.socket.emit("typing", {
+              username: localStorage.getItem("username"),
+            });
             setText(e.target.value);
           }}
           className="w-full p-5 bg-[#383A40] rounded-xl h-12 text-xl placeholder:text-xl outline-none text-white placeholder:text-gray-500 px-10 mb-10"
