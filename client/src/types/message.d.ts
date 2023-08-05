@@ -9,7 +9,7 @@ export interface MessageUser {
   username: string;
 }
 
-export type MessageFromSocket{
+export type MessageFromSocket = {
   username: string;
   text: string;
-}
+};
