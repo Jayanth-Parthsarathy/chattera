@@ -7,7 +7,7 @@ import { io } from "socket.io-client";
 import { useState } from "react";
 import { RoomType } from "./types/room";
 import CreateRoom from "./pages/CreateRoom";
-const socket = io("https://chattera.onrender.com");
+const socket = io(import.meta.env.VITE_APP_BACKEND_URL!);
 export default function App() {
   const [rooms, setRooms] = useState<RoomType[]>([]);
   const [room, setRoom] = useState<string>("");

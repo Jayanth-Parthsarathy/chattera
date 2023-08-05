@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://chattera.onrender.com/api",
+  baseURL: import.meta.env.VITE_APP_BACKEND_URL!,
   headers: {
     "Content-Type": "application/json",
     timeout: 1000,
