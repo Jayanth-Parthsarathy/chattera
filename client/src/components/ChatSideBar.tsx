@@ -5,7 +5,7 @@ import axios from "../utils/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { User } from "../types/user";
 
-type Props = { socket: Socket };
+type Props = { socket: Socket; room: string };
 
 const ChatSideBar = (props: Props) => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const ChatSideBar = (props: Props) => {
     <div className="w-full h-full p-5 flex flex-col justify-between">
       <div>
         <div>
-          <h1 className="text-4xl text-white mt-10">Room Name</h1>
+          <h1 className="text-4xl text-white mt-10">{props.room}</h1>
         </div>
         <div>
           <h4 className="text-white text-2xl mt-5"> Users:</h4>
