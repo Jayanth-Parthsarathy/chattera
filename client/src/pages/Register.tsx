@@ -70,7 +70,7 @@ const Login = () => {
         </form>
         <div className="text-center mt-4">
           <button onClick={navigateToLogin} className="underline text-lg mt-4">
-            New User? Sign Up
+            Already have an account? Login
           </button>
         </div>
       </div>
