@@ -19,7 +19,7 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CLIENT_URL!,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   },
 });
@@ -38,6 +38,9 @@ io.on("connection", (socket) => {
       username: user?.username,
     };
     socket.broadcast.to(data.room).emit("userJoined", payload);
+    socket.on("typing", (obj) => {
+      socket.broadcast.to(data.room).emit("typing", obj);
+    });
     socket.on("send", (obj) => {
       const payload = {
         user: {
