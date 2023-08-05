@@ -16,7 +16,7 @@ const JoinRoom = (props: Props) => {
   const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { data } = await axios.post(`/room/join/${props.room}`);
+    await axios.post(`/room/join/${props.room}`);
     const payload = {
       username: localStorage.getItem("username"),
       room: props.room,

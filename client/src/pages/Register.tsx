@@ -2,9 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
 
-type Props = {};
-
-const Login = (props: Props) => {
+const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -14,7 +12,7 @@ const Login = (props: Props) => {
     if (!username || !password || !email) {
       return;
     }
-    const { data } = await axios.post("auth/register", {
+    await axios.post("auth/register", {
       username,
       password,
       email,

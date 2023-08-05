@@ -6,7 +6,6 @@ import Room from "./pages/Room";
 import { io } from "socket.io-client";
 import { useState } from "react";
 import { RoomType } from "./types/room";
-import Header from "./components/Header";
 import CreateRoom from "./pages/CreateRoom";
 const socket = io("http://localhost:3000");
 export default function App() {

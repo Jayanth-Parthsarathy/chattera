@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../utils/axios";
-import { Message, MessageFromSocket } from "../types/message";
+import { Message } from "../types/message";
 import { Socket } from "socket.io-client";
 import MessageText from "./Message";
 
