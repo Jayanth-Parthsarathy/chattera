@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:3000/api/",
+  baseURL: "https://chattera.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
     timeout: 1000,
