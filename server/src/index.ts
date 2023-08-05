@@ -10,7 +10,7 @@ import http from "http";
 import { Server } from "socket.io";
 import User from "./models/UserModel";
 dotenv.config();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT! || 3000;
 connectToDB();
 
 const app = express();
@@ -31,26 +31,32 @@ app.use("/api/room", roomRoutes);
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("joinRoom", async (data) => {
-    socket.join(data.roomId);
+    socket.join(data.room);
     const user = await User.findOne({ username: data.username });
     const payload = {
       userId: user?._id,
       username: user?.username,
     };
-    io.to(data.roomId).emit("userJoined", payload);
-    socket.on("send", (data) => {
+    socket.broadcast.to(data.room).emit("userJoined", payload);
+    socket.on("send", (obj) => {
       const payload = {
         user: {
-          username: data.username,
+          username: obj.username,
         },
-        text: data.text,
+        text: obj.text,
       };
-      socket.broadcast.to(data.roomId).emit("receive", payload);
+      console.log(data.room);
+      socket.broadcast.to(data.room).emit("receive", payload);
     });
-    socket.on("leave", () => {
-      io.to(data.roomId).emit("userLeft", payload);
-      socket.leave(data.roomId);
+    socket.on("leave", (roomId) => {
+      socket.broadcast.to(roomId).emit("userLeft", payload);
+      console.log(roomId);
+      socket.leave(roomId);
+      socket.removeAllListeners("send");
     });
+  });
+  io.on("disconnect", () => {
+    console.log("user disconnected");
   });
 });
 server.listen(port, () => {
