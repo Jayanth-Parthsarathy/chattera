@@ -59,6 +59,7 @@ io.on("connection", (socket) => {
       console.log(roomId);
       socket.leave(roomId);
       socket.removeAllListeners("send");
+      socket.removeAllListeners("typing");
     });
   });
   io.on("disconnect", () => {
