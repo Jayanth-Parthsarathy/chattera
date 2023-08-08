@@ -30,7 +30,7 @@ const MessageBox = (props: Props) => {
       },
       _id: data.message._id,
     };
-    props.socket.emit("send", payload);
+    props.socket.emit("send", messagePayload);
     props.setMessages([...props.messages, messagePayload]);
     props.socket.emit("stopTyping", {
       username: localStorage.getItem("username"),

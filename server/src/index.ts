@@ -45,13 +45,7 @@ io.on("connection", (socket) => {
       socket.broadcast.to(data.room).emit("stopTyping", obj);
     });
     socket.on("send", (obj) => {
-      const payload = {
-        user: {
-          username: obj.username,
-        },
-        text: obj.text,
-      };
-      socket.broadcast.to(data.room).emit("receive", payload);
+      socket.broadcast.to(data.room).emit("receive", obj);
     });
     socket.on("delete", (message) => {
       socket.broadcast.to(data.room).emit("delete", message);
