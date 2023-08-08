@@ -9,6 +9,7 @@ import messageRoutes from "./routes/messageRoutes";
 import http from "http";
 import { Server } from "socket.io";
 import User from "./models/UserModel";
+
 dotenv.config();
 const port = process.env.PORT! || 3000;
 connectToDB();
@@ -29,7 +30,6 @@ app.use("/api/user", userRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/room", roomRoutes);
 io.on("connection", (socket) => {
-  console.log("a user connected");
   socket.on("joinRoom", async (data) => {
     socket.join(data.room);
     const user = await User.findOne({ username: data.username });
@@ -51,21 +51,22 @@ io.on("connection", (socket) => {
         },
         text: obj.text,
       };
-      console.log(data.room);
       socket.broadcast.to(data.room).emit("receive", payload);
+    });
+    socket.on("delete", (message) => {
+      socket.broadcast.to(data.room).emit("delete", message);
     });
     socket.on("leave", (roomId) => {
       socket.broadcast.to(roomId).emit("userLeft", payload);
-      console.log(roomId);
       socket.leave(roomId);
       socket.removeAllListeners("send");
       socket.removeAllListeners("typing");
+      socket.removeAllListeners("stopTyping");
+      socket.removeAllListeners("delete");
     });
   });
-  io.on("disconnect", () => {
-    console.log("user disconnected");
-  });
+  io.on("disconnect", () => {});
 });
 server.listen(port, () => {
-  console.log("Server running on port " + port);
+  console.log("Server running");
 });

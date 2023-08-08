@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React from "react";
 import { useEffect } from "react";
 import { Socket } from "socket.io-client";
 import axios from "../utils/axios";
@@ -12,8 +12,7 @@ const ChatSideBar = (props: Props) => {
   const [users, setUsers] = React.useState<User[]>([]);
   const { id } = useParams<{ id: string }>();
   const leaveRoom = async () => {
-    const { data } = await axios.post(`/room/leave/${id}`);
-    console.log(data);
+    await axios.post(`/room/leave/${id}`);
     props.socket.emit("leave", id);
     navigate("/");
   };
@@ -43,15 +42,16 @@ const ChatSideBar = (props: Props) => {
       props.socket.off("userJoined");
     };
   }, [props.socket]);
+
   useEffect(() => {
     props.socket.on("userLeft", (user: any) => {
-      console.log("user left");
       setUsers((prev) => prev.filter((u) => u._id !== user.userId));
     });
     return () => {
       props.socket.off("userLeft");
     };
   }, [props.socket]);
+
   return (
     <div className="w-full h-full p-5 flex flex-col justify-between">
       <div>

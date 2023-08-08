@@ -29,4 +29,26 @@ const sendMessage = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export { sendMessage };
+const deleteMessage = async (req: AuthRequest, res: Response) => {
+  try {
+    const { messageId } = req.params;
+    const userId = req.userId;
+    const message = await Message.findById(messageId).populate(
+      "user",
+      "-password",
+    );
+    if (!message) {
+      return res.status(400).json({ message: "Message not found" });
+    }
+    const roomId = message.room;
+    await Message.findByIdAndDelete(messageId);
+    await Room.findOneAndUpdate(roomId, {
+      $pull: { messages: messageId },
+    });
+    return res.status(200).json({ message: message });
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export { sendMessage, deleteMessage };

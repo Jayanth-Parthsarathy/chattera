@@ -35,6 +35,25 @@ const Chat = (props: Props) => {
       navigate("/login");
     }
   }, []);
+  useEffect(() => {
+    props.socket.on("delete", (data: any) => {
+      const message = data.message;
+      const payload: Message = {
+        _id: message._id,
+        text: message.text,
+        user: {
+          _id: message.user._id,
+          username: message.user.username,
+        },
+      };
+      props.setMessages((prev) =>
+        prev.filter((msg) => msg._id !== payload._id),
+      );
+    });
+    return () => {
+      props.socket.off("delete");
+    };
+  }, [props.socket]);
 
   return (
     <div
@@ -44,9 +63,12 @@ const Chat = (props: Props) => {
       <div className="mb-20">
         {props.messages.map((message) => (
           <MessageText
+            socket={props.socket}
             text={message.text}
             username={message.user?.username}
             key={message._id}
+            id={message._id}
+            setMessages={props.setMessages}
           />
         ))}
       </div>

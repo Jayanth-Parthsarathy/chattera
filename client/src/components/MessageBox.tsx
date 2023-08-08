@@ -28,7 +28,7 @@ const MessageBox = (props: Props) => {
         _id: data.message.user._id,
         username: username,
       },
-      _id: uuidv4(),
+      _id: data.message._id,
     };
     props.socket.emit("send", payload);
     props.setMessages([...props.messages, messagePayload]);

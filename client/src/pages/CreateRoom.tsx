@@ -8,7 +8,6 @@ const CreateRoom = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { data } = await axios.post("room/create", { name });
-    console.log(data);
     navigateToJoinRoom();
   };
   const [name, setName] = React.useState("");
